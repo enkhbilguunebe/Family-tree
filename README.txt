@@ -1,18 +1,18 @@
-Mongolian Family Tree Website
+Mongolian Animated Family Tree Website
 
-How to open:
-1. Unzip the folder.
-2. Open index.html in your browser.
+Files:
+- index.html
+- style.css
+- script.js
+- assets/mongolian-background.png
+- assets/golden-script-panel.png
+
+How to run:
+Open index.html in your browser.
 
 How to edit people:
-- Open script.js.
-- Change the names, relation, birth year, birthplace, and description.
+Open script.js and change the names, dates, places, and bio text inside the people object.
 
-How to change photos:
-- In index.html, replace https://via.placeholder.com/90 with your own image file name.
-- Example: img src="images/father.jpg"
-
-How to change background:
-- Open style.css.
-- Find the body background url.
-- Replace it with your own Mongolian mountain image.
+How to upload to GitHub Pages:
+Upload the full folder contents, not the ZIP itself.
+Your GitHub repository should contain index.html, style.css, script.js, and the assets folder.
