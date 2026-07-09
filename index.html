@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Монгол Гэр Бүлийн Мод</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Монгол Гэр Бүлийн Мод</h1>
+    <p>Удам угсаа, гэр бүлийн холбоос</p>
+  </header>
+
+  <main class="container">
+    <section class="tree-area">
+      <div class="generation">
+        <div class="person" onclick="showInfo('grandfather')">
+          <img src="https://via.placeholder.com/90" alt="Өвөө">
+          <span>Бат өвөө</span>
+        </div>
+
+        <div class="person" onclick="showInfo('grandmother')">
+          <img src="https://via.placeholder.com/90" alt="Эмээ">
+          <span>Саран эмээ</span>
+        </div>
+      </div>
+
+      <div class="line vertical"></div>
+
+      <div class="generation">
+        <div class="person" onclick="showInfo('father')">
+          <img src="https://via.placeholder.com/90" alt="Аав">
+          <span>Дорж аав</span>
+        </div>
+
+        <div class="person" onclick="showInfo('mother')">
+          <img src="https://via.placeholder.com/90" alt="Ээж">
+          <span>Оюун ээж</span>
+        </div>
+      </div>
+
+      <div class="line vertical"></div>
+
+      <div class="generation">
+        <div class="person" onclick="showInfo('child1')">
+          <img src="https://via.placeholder.com/90" alt="Хүүхэд">
+          <span>Тэмүүлэн</span>
+        </div>
+
+        <div class="person" onclick="showInfo('child2')">
+          <img src="https://via.placeholder.com/90" alt="Хүүхэд">
+          <span>Анужин</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="info-card" id="infoCard">
+      <h2>Хүний мэдээлэл</h2>
+      <p>Гэр бүлийн мод дээрх хүний нэр дээр дарна уу.</p>
+    </aside>
+  </main>
+
+  <footer>
+    <p>© 2026 Монгол гэр бүлийн түүх</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
