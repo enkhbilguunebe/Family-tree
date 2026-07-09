@@ -7,51 +7,33 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="bg-shade"></div>
+  <div class="bgShade"></div>
 
-  <header class="hero">
-    <div class="hero-badge">Монгол Удам Судар</div>
-    <h1>Golden Bloodline Family Tree</h1>
-    <p>From two ancestors to 100 family members — click any portrait to open the golden gerege profile.</p>
-    <div class="toolbar">
-      <button id="zoomOut">− Zoom</button>
-      <button id="resetView">Reset</button>
-      <button id="zoomIn">+ Zoom</button>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Монгол удам • Bloodline tree</p>
+      <h1>Family Tree</h1>
+    </div>
+    <div class="controls" aria-label="Tree controls">
+      <button id="zoomOut" title="Zoom out">−</button>
+      <button id="resetView" title="Reset view">Reset</button>
+      <button id="zoomIn" title="Zoom in">+</button>
     </div>
   </header>
 
-  <main class="stage-wrap">
-    <section class="legend">
-      <span><i class="dot blood"></i> Big circle = bloodline son/daughter</span>
-      <span><i class="dot spouse"></i> Small circle = husband/wife</span>
-      <span><i class="line-mark"></i> Golden line = bloodline connection</span>
-    </section>
-
-    <section class="tree-scroll" id="treeScroll">
-      <div class="tree-stage" id="treeStage">
-        <svg class="connector-layer" id="connectorLayer" aria-hidden="true"></svg>
-        <div class="root-glow"></div>
-        <div id="nodesLayer"></div>
-      </div>
-    </section>
+  <main id="viewport" class="viewport">
+    <div id="world" class="world">
+      <svg id="lines" class="lines" aria-hidden="true"></svg>
+      <div id="nodes" class="nodes"></div>
+      <div id="cards" class="cards"></div>
+    </div>
   </main>
 
-  <template id="nodeTemplate">
-    <article class="node-card">
-      <button class="portrait" type="button">
-        <span class="initials"></span>
-      </button>
-      <button class="spouse" type="button">
-        <span class="initials"></span>
-      </button>
-      <div class="label"></div>
-      <div class="gerege-panel"></div>
-    </article>
-  </template>
-
-  <footer>
-    <p>Tip: edit <strong>script.js</strong> to replace generated names with your real family members and portrait photos.</p>
-  </footer>
+  <section class="legend">
+    <span><i class="dot blood"></i> Big gold circle = bloodline</span>
+    <span><i class="dot spouse"></i> Smaller silver circle = husband / wife</span>
+    <span>Click a person to open the golden gerege profile.</span>
+  </section>
 
   <script src="script.js"></script>
 </body>

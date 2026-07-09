@@ -1,25 +1,26 @@
-Mongolian 100-Person Animated Family Tree
+Mongolian Logic Family Tree Website
 
-GitHub Pages ready files:
+Files:
 - index.html
 - style.css
 - script.js
 - assets/mongolian-background.png
+- assets/gerege.png
 
-How it works:
-- Big gold circle = bloodline son/daughter.
-- Smaller silver circle = husband/wife.
-- The tree starts from 2 founder people near the roots.
-- Younger generations grow upward like branches.
-- Hover over a profile circle to make it bigger.
-- Click a profile circle to roll down the golden gerege-style information panel.
-
-How to edit names:
-Open script.js and edit the firstNames, spouseNames, or replace the generated data with your real family data.
-
-How to upload to GitHub Pages:
-1. Extract this ZIP.
-2. Upload index.html, style.css, script.js, and the assets folder to your repository.
+How to use on GitHub Pages:
+1. Extract the ZIP.
+2. Upload index.html, style.css, script.js, and the assets folder to your GitHub repository.
 3. Go to Settings > Pages.
-4. Select main branch and /root folder.
+4. Select Deploy from a branch, main branch, /root folder.
 5. Save and wait for the GitHub Pages link.
+
+How the logic works:
+- The tree starts from 2 founders at the bottom/root.
+- Descendants grow upward by generation.
+- Big gold circles are bloodline people.
+- Smaller silver circles are spouses.
+- Only bloodline descendants continue the main branch.
+- Each child group is centered above its parents, not randomly placed.
+
+Edit people:
+Open script.js and edit the generated names or replace the buildFamily() function with your real family data.
