@@ -3,117 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mongolian Family Tree</title>
+  <title>Mongolian Bloodline Family Tree</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="page-bg"></div>
-  <div class="mist"></div>
+  <div class="bg-shade"></div>
 
-  <header class="topbar">
-    <div>
-      <p class="eyebrow">Монгол удам угсаа</p>
-      <h1>Family Tree</h1>
+  <header class="hero">
+    <div class="hero-badge">Монгол Удам Судар</div>
+    <h1>Golden Bloodline Family Tree</h1>
+    <p>From two ancestors to 100 family members — click any portrait to open the golden gerege profile.</p>
+    <div class="toolbar">
+      <button id="zoomOut">− Zoom</button>
+      <button id="resetView">Reset</button>
+      <button id="zoomIn">+ Zoom</button>
     </div>
-    <button id="resetBtn" class="ghost-btn">Reset view</button>
   </header>
 
-  <main class="app-shell">
-    <section class="tree-card" aria-label="Interactive family tree">
-      <div class="tree-title">
-        <h2>Click a portrait</h2>
-        <p>Older generations grow from the roots. Younger generations rise higher like branches.</p>
-      </div>
-
-      <div class="tree-stage">
-        <svg class="tree-lines" viewBox="0 0 1000 760" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="goldLine" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stop-color="#5b3213" />
-              <stop offset="45%" stop-color="#b88735" />
-              <stop offset="100%" stop-color="#ffe3a1" />
-            </linearGradient>
-            <filter id="softGlow">
-              <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-
-          <!-- Roots -->
-          <path class="root-line" d="M500 710 C430 735, 345 727, 285 747" />
-          <path class="root-line" d="M500 710 C575 735, 660 726, 730 747" />
-          <path class="root-line" d="M500 710 C490 742, 455 750, 420 759" />
-          <path class="root-line" d="M500 710 C514 742, 555 750, 605 759" />
-
-          <!-- Tree trunk and branches -->
-          <path class="main-trunk" d="M500 705 C495 610, 505 535, 500 465 C492 370, 498 275, 500 180" />
-          <path class="branch-line" d="M500 585 C390 560, 310 520, 245 452" />
-          <path class="branch-line" d="M500 585 C610 560, 690 520, 755 452" />
-          <path class="branch-line" d="M500 420 C390 390, 295 345, 210 278" />
-          <path class="branch-line" d="M500 420 C610 390, 705 345, 790 278" />
-          <path class="branch-line" d="M500 260 C450 230, 420 190, 380 135" />
-          <path class="branch-line" d="M500 260 C550 230, 580 190, 620 135" />
-        </svg>
-
-        <!-- Youngest / top branches -->
-        <button class="person node-top node-left" data-person="child1">
-          <span class="photo">Т</span>
-          <span class="name">Temuulen</span>
-          <span class="role">Son</span>
-        </button>
-
-        <button class="person node-top node-right" data-person="child2">
-          <span class="photo">А</span>
-          <span class="name">Anujin</span>
-          <span class="role">Daughter</span>
-        </button>
-
-        <!-- Parents / middle branches -->
-        <button class="person node-mid node-left" data-person="father">
-          <span class="photo">Д</span>
-          <span class="name">Dorj</span>
-          <span class="role">Father</span>
-        </button>
-
-        <button class="person node-mid node-right" data-person="mother">
-          <span class="photo">О</span>
-          <span class="name">Oyun</span>
-          <span class="role">Mother</span>
-        </button>
-
-        <!-- Grandparents / roots -->
-        <button class="person node-root node-left" data-person="grandfather">
-          <span class="photo">Б</span>
-          <span class="name">Bat</span>
-          <span class="role">Grandfather</span>
-        </button>
-
-        <button class="person node-root node-right" data-person="grandmother">
-          <span class="photo">С</span>
-          <span class="name">Saran</span>
-          <span class="role">Grandmother</span>
-        </button>
-      </div>
+  <main class="stage-wrap">
+    <section class="legend">
+      <span><i class="dot blood"></i> Big circle = bloodline son/daughter</span>
+      <span><i class="dot spouse"></i> Small circle = husband/wife</span>
+      <span><i class="line-mark"></i> Golden line = bloodline connection</span>
     </section>
 
-    <aside class="info-panel" id="infoPanel" aria-live="polite">
-      <div class="gold-ornament"></div>
-      <div class="panel-content">
-        <p class="panel-kicker">Person information</p>
-        <h2 id="infoName">Choose someone</h2>
-        <div class="big-portrait" id="infoPortrait">?</div>
-        <div class="info-grid">
-          <p><strong>Relation</strong><span id="infoRelation">Click a portrait on the tree.</span></p>
-          <p><strong>Born</strong><span id="infoBirth">—</span></p>
-          <p><strong>Birthplace</strong><span id="infoPlace">—</span></p>
-        </div>
-        <p class="bio" id="infoBio">The information card will slide open from the selected portrait and show details here.</p>
+    <section class="tree-scroll" id="treeScroll">
+      <div class="tree-stage" id="treeStage">
+        <svg class="connector-layer" id="connectorLayer" aria-hidden="true"></svg>
+        <div class="root-glow"></div>
+        <div id="nodesLayer"></div>
       </div>
-    </aside>
+    </section>
   </main>
+
+  <template id="nodeTemplate">
+    <article class="node-card">
+      <button class="portrait" type="button">
+        <span class="initials"></span>
+      </button>
+      <button class="spouse" type="button">
+        <span class="initials"></span>
+      </button>
+      <div class="label"></div>
+      <div class="gerege-panel"></div>
+    </article>
+  </template>
+
+  <footer>
+    <p>Tip: edit <strong>script.js</strong> to replace generated names with your real family members and portrait photos.</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>

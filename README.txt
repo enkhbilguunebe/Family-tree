@@ -1,18 +1,25 @@
-Mongolian Animated Family Tree Website
+Mongolian 100-Person Animated Family Tree
 
-Files:
+GitHub Pages ready files:
 - index.html
 - style.css
 - script.js
 - assets/mongolian-background.png
-- assets/golden-script-panel.png
 
-How to run:
-Open index.html in your browser.
+How it works:
+- Big gold circle = bloodline son/daughter.
+- Smaller silver circle = husband/wife.
+- The tree starts from 2 founder people near the roots.
+- Younger generations grow upward like branches.
+- Hover over a profile circle to make it bigger.
+- Click a profile circle to roll down the golden gerege-style information panel.
 
-How to edit people:
-Open script.js and change the names, dates, places, and bio text inside the people object.
+How to edit names:
+Open script.js and edit the firstNames, spouseNames, or replace the generated data with your real family data.
 
 How to upload to GitHub Pages:
-Upload the full folder contents, not the ZIP itself.
-Your GitHub repository should contain index.html, style.css, script.js, and the assets folder.
+1. Extract this ZIP.
+2. Upload index.html, style.css, script.js, and the assets folder to your repository.
+3. Go to Settings > Pages.
+4. Select main branch and /root folder.
+5. Save and wait for the GitHub Pages link.
