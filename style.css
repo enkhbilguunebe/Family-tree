@@ -105,7 +105,7 @@ body {
 
 .entry-card p {
   margin: 0 0 18px;
-  opacity: 0.88;
+  opacity: 0.96;
 }
 
 .entry-card input {
@@ -398,7 +398,7 @@ body {
 .blood-line {
   fill: none;
   stroke: var(--line);
-  stroke-width: 4.2;
+  stroke-width: 5.2;
   stroke-linecap: round;
   stroke-linejoin: round;
   filter: drop-shadow(0 0 7px rgba(255, 220, 95, 0.5));
@@ -409,10 +409,10 @@ body {
 .spouse-line {
   fill: none;
   stroke: rgba(231, 226, 216, 0.92);
-  stroke-width: 3;
+  stroke-width: 3.4;
   stroke-linecap: round;
   stroke-dasharray: 10 9;
-  opacity: 0.88;
+  opacity: 0.96;
 }
 
 .line-dimmed {
@@ -755,7 +755,7 @@ body {
   }
 
   .tree-viewport {
-    height: calc(100vh - 210px);
+    height: calc(100dvh - 205px);
     min-height: 430px;
     border-radius: 20px;
   }
@@ -826,7 +826,7 @@ body {
   }
 
   .tree-viewport {
-    height: calc(100vh - 225px);
+    height: calc(100dvh - 218px);
   }
 
   .mini-map {
@@ -848,4 +848,113 @@ body {
 .search input:focus-visible {
   outline: 2px solid var(--gold-light);
   outline-offset: 3px;
+}
+
+
+/* =========================================================
+   14. Real phone gestures: one-finger pan, two-finger zoom
+   ========================================================= */
+.tree-viewport,
+.tree-canvas,
+.node-layer,
+.line-layer,
+.card-layer {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+.tree-viewport {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-overflow-scrolling: auto;
+}
+
+.tree-canvas {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.person-node {
+  touch-action: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .person-node:hover {
+    transform: translate(-50%, -50%);
+  }
+
+  .person-node:active {
+    transform: translate(-50%, -50%) scale(1.08);
+    filter: drop-shadow(0 0 16px rgba(255, 229, 130, 0.95));
+  }
+
+  .tree-viewport {
+    height: calc(100dvh - 205px);
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+  }
+
+  .app {
+    height: 100dvh;
+  }
+
+  .topbar {
+    max-height: 190px;
+    overflow: visible;
+  }
+
+  .tree-viewport {
+    height: calc(100dvh - 205px);
+    min-height: 360px;
+  }
+
+  .hint {
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .tree-viewport {
+    height: calc(100dvh - 218px);
+    min-height: 340px;
+  }
+}
+
+
+/* =========================================================
+   15. Logic/visibility correction
+   ========================================================= */
+.blood-line {
+  vector-effect: non-scaling-stroke;
+}
+
+.spouse-line {
+  vector-effect: non-scaling-stroke;
+}
+
+.bus-line {
+  opacity: 0.98;
+}
+
+.child-line,
+.trunk-line {
+  opacity: 1;
+}
+
+@media (max-width: 760px) {
+  .blood-line {
+    stroke-width: 6;
+  }
+
+  .spouse-line {
+    stroke-width: 4;
+  }
 }

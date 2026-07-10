@@ -132,13 +132,26 @@ const state = {
   scale: 1,
   offsetX: 0,
   offsetY: 0,
+  bounds: { minX: 0, minY: 0, maxX: 0, maxY: 0, width: 0, height: 0 },
+
+  // Touch / drag state
+  pointers: new Map(),
   isDragging: false,
-  dragPointerId: null,
+  isPinching: false,
   dragStartX: 0,
   dragStartY: 0,
   dragBaseX: 0,
   dragBaseY: 0,
-  bounds: { minX: 0, minY: 0, maxX: 0, maxY: 0, width: 0, height: 0 }
+  movedDuringTouch: false,
+
+  // Pinch state
+  pinchStartDistance: 0,
+  pinchStartScale: 1,
+  pinchWorldX: 0,
+  pinchWorldY: 0,
+
+  // Smooth immediate transform
+  rafId: null
 };
 
 const $ = (id) => document.getElementById(id);
@@ -239,33 +252,51 @@ function renderNodes() {
 /* =========================================================
    6. Connection rendering
    ========================================================= */
+function parentAnchorX(parent) {
+  const spouse = getPerson(parent.spouseId);
+  if (spouse) return (parent.x + spouse.x) / 2;
+  return parent.x;
+}
+
+function parentAnchorY(parent) {
+  const spouse = getPerson(parent.spouseId);
+  if (spouse) return (parent.y + spouse.y) / 2;
+  return parent.y;
+}
+
 function renderLines() {
   const svg = $("lineLayer");
   svg.setAttribute("viewBox", `0 0 ${state.bounds.width} ${state.bounds.height}`);
   svg.innerHTML = "";
 
+  // Main bloodline lines. The line starts from the couple center when a spouse exists.
   familyData.filter(p => p.type === "bloodline").forEach(parent => {
     const children = parent.childrenIds.map(getPerson).filter(p => p && p.type === "bloodline");
     if (!children.length) return;
 
-    const parentTopY = parent.y - nodeRadius(parent) - 6;
-    const childBottomYs = children.map(child => child.y + nodeRadius(child) + 6);
+    const anchorX = parentAnchorX(parent);
+    const anchorY = parentAnchorY(parent);
+    const parentTopY = anchorY - nodeRadius(parent) - 10;
+    const childBottomYs = children.map(child => child.y + nodeRadius(child) + 10);
     const busY = (parentTopY + Math.min(...childBottomYs)) / 2;
 
     const trunk = createSvg("line");
-    trunk.setAttribute("x1", parent.x);
+    trunk.setAttribute("x1", anchorX);
     trunk.setAttribute("y1", parentTopY);
-    trunk.setAttribute("x2", parent.x);
+    trunk.setAttribute("x2", anchorX);
     trunk.setAttribute("y2", busY);
     trunk.setAttribute("class", "blood-line trunk-line");
     trunk.dataset.parent = parent.id;
     svg.appendChild(trunk);
 
+    const minChildX = Math.min(...children.map(c => c.x));
+    const maxChildX = Math.max(...children.map(c => c.x));
+
     if (children.length > 1) {
       const bus = createSvg("line");
-      bus.setAttribute("x1", Math.min(...children.map(c => c.x)));
+      bus.setAttribute("x1", Math.min(anchorX, minChildX));
       bus.setAttribute("y1", busY);
-      bus.setAttribute("x2", Math.max(...children.map(c => c.x)));
+      bus.setAttribute("x2", Math.max(anchorX, maxChildX));
       bus.setAttribute("y2", busY);
       bus.setAttribute("class", "blood-line bus-line");
       bus.dataset.parent = parent.id;
@@ -273,7 +304,7 @@ function renderLines() {
     }
 
     children.forEach(child => {
-      const childBottomY = child.y + nodeRadius(child) + 6;
+      const childBottomY = child.y + nodeRadius(child) + 10;
       const branch = createSvg("line");
       branch.setAttribute("x1", child.x);
       branch.setAttribute("y1", busY);
@@ -286,13 +317,18 @@ function renderLines() {
     });
   });
 
+  // Spouse line. This is lighter and horizontal.
   familyData.filter(p => p.type === "bloodline" && p.spouseId).forEach(person => {
     const sp = getPerson(person.spouseId);
     if (!sp) return;
+
     const line = createSvg("line");
-    line.setAttribute("x1", person.x + nodeRadius(person) + 6);
+    const personEdge = sp.x > person.x ? person.x + nodeRadius(person) + 8 : person.x - nodeRadius(person) - 8;
+    const spouseEdge = sp.x > person.x ? sp.x - nodeRadius(sp) - 8 : sp.x + nodeRadius(sp) + 8;
+
+    line.setAttribute("x1", personEdge);
     line.setAttribute("y1", person.y);
-    line.setAttribute("x2", sp.x - nodeRadius(sp) - 6);
+    line.setAttribute("x2", spouseEdge);
     line.setAttribute("y2", sp.y);
     line.setAttribute("class", "spouse-line");
     line.dataset.from = person.id;
@@ -305,6 +341,7 @@ function renderLines() {
    7. Gerege card logic
    ========================================================= */
 function selectPerson(id) {
+  if (state.movedDuringTouch) return;
   state.selectedId = id;
   highlightBloodline(id);
   renderGeregeCard(id);
@@ -374,8 +411,13 @@ function searchPerson() {
    9. Pan and zoom logic
    ========================================================= */
 function applyTransform() {
-  $("treeCanvas").style.transform = `translate3d(${state.offsetX}px, ${state.offsetY}px, 0) scale(${state.scale})`;
-  updateMiniMapView();
+  if (state.rafId) return;
+
+  state.rafId = requestAnimationFrame(() => {
+    $("treeCanvas").style.transform = `translate3d(${state.offsetX}px, ${state.offsetY}px, 0) scale(${state.scale})`;
+    updateMiniMapView();
+    state.rafId = null;
+  });
 }
 
 function fitTreeToView() {
@@ -413,30 +455,127 @@ function zoomBy(delta) {
 }
 
 function startDrag(event) {
-  if (event.target.closest(".person-node") || event.target.closest(".gerege-card")) return;
-  state.isDragging = true;
-  state.dragPointerId = event.pointerId;
-  state.dragStartX = event.clientX;
-  state.dragStartY = event.clientY;
-  state.dragBaseX = state.offsetX;
-  state.dragBaseY = state.offsetY;
-  $("treeViewport").classList.add("dragging");
-  $("treeViewport").setPointerCapture(event.pointerId);
+  // Allow dragging from anywhere, including over a person.
+  // If the finger does not move, the normal click still opens the profile.
+  const viewport = $("treeViewport");
+  viewport.setPointerCapture(event.pointerId);
+  state.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+  state.movedDuringTouch = false;
+
+  if (state.pointers.size === 1) {
+    state.isDragging = true;
+    state.isPinching = false;
+    state.dragStartX = event.clientX;
+    state.dragStartY = event.clientY;
+    state.dragBaseX = state.offsetX;
+    state.dragBaseY = state.offsetY;
+    viewport.classList.add("dragging");
+  }
+
+  if (state.pointers.size === 2) {
+    beginPinch();
+  }
+
   event.preventDefault();
 }
 
 function dragMove(event) {
-  if (!state.isDragging || event.pointerId !== state.dragPointerId) return;
-  state.offsetX = state.dragBaseX + event.clientX - state.dragStartX;
-  state.offsetY = state.dragBaseY + event.clientY - state.dragStartY;
+  if (!state.pointers.has(event.pointerId)) return;
+
+  state.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+  if (state.pointers.size === 2) {
+    movePinch();
+    event.preventDefault();
+    return;
+  }
+
+  if (!state.isDragging || state.pointers.size !== 1) return;
+
+  const dx = event.clientX - state.dragStartX;
+  const dy = event.clientY - state.dragStartY;
+
+  if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+    state.movedDuringTouch = true;
+  }
+
+  state.offsetX = state.dragBaseX + dx;
+  state.offsetY = state.dragBaseY + dy;
   applyTransform();
+  event.preventDefault();
 }
 
 function endDrag(event) {
-  if (!state.isDragging || event.pointerId !== state.dragPointerId) return;
+  state.pointers.delete(event.pointerId);
+
+  if (state.pointers.size === 0) {
+    state.isDragging = false;
+    state.isPinching = false;
+    $("treeViewport").classList.remove("dragging");
+
+    // Wait a moment so the click event after touch does not open a card accidentally.
+    if (state.movedDuringTouch) {
+      setTimeout(() => {
+        state.movedDuringTouch = false;
+      }, 90);
+    }
+  }
+
+  if (state.pointers.size === 1) {
+    const point = [...state.pointers.values()][0];
+    state.isDragging = true;
+    state.isPinching = false;
+    state.dragStartX = point.x;
+    state.dragStartY = point.y;
+    state.dragBaseX = state.offsetX;
+    state.dragBaseY = state.offsetY;
+  }
+}
+
+function beginPinch() {
+  const viewport = $("treeViewport");
+  const [a, b] = [...state.pointers.values()];
+  const center = midpoint(a, b);
+
   state.isDragging = false;
-  state.dragPointerId = null;
-  $("treeViewport").classList.remove("dragging");
+  state.isPinching = true;
+  state.movedDuringTouch = true;
+  state.pinchStartDistance = distance(a, b);
+  state.pinchStartScale = state.scale;
+
+  // Keep the pinch center locked to the same tree point.
+  state.pinchWorldX = (center.x - viewport.getBoundingClientRect().left - state.offsetX) / state.scale;
+  state.pinchWorldY = (center.y - viewport.getBoundingClientRect().top - state.offsetY) / state.scale;
+}
+
+function movePinch() {
+  if (!state.isPinching) return;
+
+  const viewport = $("treeViewport");
+  const [a, b] = [...state.pointers.values()];
+  const center = midpoint(a, b);
+  const nextScale = clamp(
+    state.pinchStartScale * (distance(a, b) / state.pinchStartDistance),
+    CONFIG.minScale,
+    CONFIG.maxScale
+  );
+
+  state.scale = nextScale;
+  state.offsetX = center.x - viewport.getBoundingClientRect().left - state.pinchWorldX * nextScale;
+  state.offsetY = center.y - viewport.getBoundingClientRect().top - state.pinchWorldY * nextScale;
+  applyTransform();
+}
+
+function midpoint(a, b) {
+  return {
+    x: (a.x + b.x) / 2,
+    y: (a.y + b.y) / 2
+  };
+}
+
+function distance(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 /* =========================================================
@@ -460,11 +599,13 @@ function highlightBloodline(id) {
 
   document.querySelectorAll(".blood-line, .spouse-line").forEach(line => {
     let active = false;
+
     if (line.dataset.from && line.dataset.to) {
       active = activeIds.has(line.dataset.from) && activeIds.has(line.dataset.to);
     } else if (line.dataset.parent) {
       active = activeIds.has(line.dataset.parent);
     }
+
     line.classList.toggle("line-dimmed", !active);
     line.classList.toggle("line-highlighted", active && line.classList.contains("blood-line"));
   });
@@ -554,6 +695,50 @@ function tryPassword() {
   }
 }
 
+
+/* =========================================================
+   13. Data validation for relationship logic
+   ========================================================= */
+function validateFamilyData() {
+  const ids = new Set();
+  const problems = [];
+
+  familyData.forEach(person => {
+    if (ids.has(person.id)) problems.push(`Duplicate id: ${person.id}`);
+    ids.add(person.id);
+  });
+
+  familyData.forEach(person => {
+    person.parentIds.forEach(parentId => {
+      if (!getPerson(parentId)) problems.push(`${person.id} has missing parent ${parentId}`);
+    });
+
+    person.childrenIds.forEach(childId => {
+      const child = getPerson(childId);
+      if (!child) {
+        problems.push(`${person.id} has missing child ${childId}`);
+      } else if (!child.parentIds.includes(person.id) && person.id !== "f1") {
+        problems.push(`${childId} is child of ${person.id}, but parentIds does not include ${person.id}`);
+      }
+    });
+
+    if (person.spouseId) {
+      const spouse = getPerson(person.spouseId);
+      if (!spouse) {
+        problems.push(`${person.id} has missing spouse ${person.spouseId}`);
+      } else if (spouse.spouseId !== person.id) {
+        problems.push(`${person.id} spouse link is not mutual with ${spouse.id}`);
+      }
+    }
+  });
+
+  if (problems.length) {
+    console.warn("Family tree logic issues:", problems);
+  } else {
+    console.info("Family tree logic check passed.");
+  }
+}
+
 function bindEvents() {
   $("enterButton").addEventListener("click", tryPassword);
   $("passwordInput").addEventListener("keydown", event => {
@@ -572,14 +757,17 @@ function bindEvents() {
   $("printButton").addEventListener("click", () => window.print());
 
   const viewport = $("treeViewport");
-  viewport.addEventListener("pointerdown", startDrag);
-  viewport.addEventListener("pointermove", dragMove);
-  viewport.addEventListener("pointerup", endDrag);
-  viewport.addEventListener("pointercancel", endDrag);
-  viewport.addEventListener("lostpointercapture", () => {
-    state.isDragging = false;
-    state.dragPointerId = null;
-    viewport.classList.remove("dragging");
+  viewport.addEventListener("pointerdown", startDrag, { passive: false });
+  viewport.addEventListener("pointermove", dragMove, { passive: false });
+  viewport.addEventListener("pointerup", endDrag, { passive: false });
+  viewport.addEventListener("pointercancel", endDrag, { passive: false });
+  viewport.addEventListener("lostpointercapture", event => {
+    state.pointers.delete(event.pointerId);
+    if (state.pointers.size === 0) {
+      state.isDragging = false;
+      state.isPinching = false;
+      viewport.classList.remove("dragging");
+    }
   });
 
   viewport.addEventListener("wheel", event => {
@@ -592,5 +780,6 @@ function bindEvents() {
   });
 }
 
+validateFamilyData();
 bindEvents();
 window.closeCard = closeCard;
