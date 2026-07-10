@@ -4,97 +4,124 @@
 const APP_PASSWORD = "Лочин";
 
 const CONFIG = {
-  nodeGapX: 128,
+  nodeGapX: 165,
   levelGapY: 250,
-  spouseGap: 92,
+  spouseGap: 86,
   marginX: 360,
   marginY: 260,
-  minScale: 0.28,
+  minScale: 0.26,
   maxScale: 1.8
 };
 
 /* =========================================================
    2. Family data
-   Known logic:
    - 2 founders
-   - founders have 11 children
-   - 10 stop there
-   - child 11 continues with 8 children
-   - those 8 branches follow the user's current known structure
+   - 11 children
+   - one known detailed branch: Өлзийбүрэн
    ========================================================= */
 const familyData = [
-  person("f1", "Үүсгэн байгуулагч 1", "bloodline", [], "f2", ["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11"], 0, "Өвөг", "Unknown"),
-  person("f2", "Үүсгэн байгуулагч 2", "spouse", [], "f1", [], 0, "Эмэг", "Unknown"),
+  blood("f1", "Үүсгэн байгуулагч", [ ], "f2", ["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11"], 0, "Өвөг"),
+  spouseNode("f2", "Үүсгэн хань", "f1", 0),
 
-  ...range(1, 11).map(i => person(`c${i}`, `11 хүүхэд ${i}`, "bloodline", ["f1","f2"], `c${i}s`, i === 11 ? ["b1","b2","b3","b4","b5","b6","b7","b8"] : [], 1, "Хүүхэд", "Unknown")),
-  ...range(1, 11).map(i => spouse(`c${i}s`, `Хань ${i}`, `c${i}`, 1)),
+  blood("c1", "1-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c2", "2-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c3", "3-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c4", "4-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c5", "5-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c6", "6-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c7", "7-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c8", "8-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c9", "9-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c10", "10-р хүүхэд", ["f1","f2"], "", [], 1, "Хүүхэд"),
+  blood("c11", "Өлзийбүрэн", ["f1","f2"], "c11s", ["b1","b2","b3","b4","b5","b6","b7","b8"], 1, "Хүүхэд"),
+  spouseNode("c11s", "Гэрэл", "c11", 1),
 
-  person("b1", "8 хүүхэд 1", "bloodline", ["c11"], "b1s", ["b1a","b1b"], 2, "Салбар 1", "Unknown"),
-  person("b2", "8 хүүхэд 2", "bloodline", ["c11"], "b2s", ["b2a","b2b"], 2, "Салбар 2", "Unknown"),
-  person("b3", "8 хүүхэд 3", "bloodline", ["c11"], "b3s", ["b3a","b3b"], 2, "Салбар 3", "Unknown"),
-  person("b4", "8 хүүхэд 4", "bloodline", ["c11"], "b4s", ["b4a","b4b","b4c"], 2, "Салбар 4", "Unknown"),
-  person("b5", "8 хүүхэд 5", "bloodline", ["c11"], "b5s", ["b5a","b5b","b5c"], 2, "Салбар 5", "Unknown"),
-  person("b6", "8 хүүхэд 6", "bloodline", ["c11"], "b6s", ["b6a","b6b"], 2, "Салбар 6", "Unknown"),
-  person("b7", "8 хүүхэд 7", "bloodline", ["c11"], "b7s", ["b7a"], 2, "Салбар 7", "Unknown"),
-  person("b8", "8 хүүхэд 8", "bloodline", ["c11"], "b8s", ["b8a"], 2, "Салбар 8", "Unknown"),
-  ...range(1, 8).map(i => spouse(`b${i}s`, `Салбар ${i} хань`, `b${i}`, 2)),
+  blood("b1", "Бүжинлхам", ["c11"], "b1s", ["b1a","b1b"], 2, "1"),
+  spouseNode("b1s", "Одгэрэл", "b1", 2),
+  blood("b1a", "Элбэг", ["b1"], "b1as", ["b1a1","b1a2"], 3, "1.1"),
+  spouseNode("b1as", "Дэнсмаа", "b1a", 3),
+  blood("b1a1", "Билэгт", ["b1a"], "", [], 4, "1.1.1"),
+  blood("b1a2", "Сосорбарам", ["b1a"], "", [], 4, "1.1.2"),
+  blood("b1b", "Элбэгсайхан", ["b1"], "b1bs", ["b1b1"], 3, "1.2"),
+  spouseNode("b1bs", "Даашка", "b1b", 3),
+  blood("b1b1", "Хүүхэд", ["b1b"], "", [], 4, "1.2.1"),
 
-  person("b1a", "1-р хүүхдийн хүүхэд 1", "bloodline", ["b1"], "b1as", ["b1a1","b1a2"], 3, "Ач/зээ", "Unknown"),
-  person("b1b", "1-р хүүхдийн хүүхэд 2", "bloodline", ["b1"], "b1bs", ["b1b1"], 3, "Ач/зээ", "Unknown"),
+  blood("b2", "Рэгжидмаа", ["c11"], "b2s", ["b2a","b2b"], 2, "2"),
+  spouseNode("b2s", "Буяннэмэх", "b2", 2),
+  blood("b2a", "Мөнхцэцэг", ["b2"], "", ["b2a1"], 3, "2.1"),
+  blood("b2a1", "Минжин", ["b2a"], "", [], 4, "2.1.1"),
+  blood("b2b", "Мөнхцолмон", ["b2"], "", [], 3, "2.2"),
 
-  person("b2a", "2-р хүүхдийн хүүхэд 1", "bloodline", ["b2"], "b2as", ["b2a1"], 3, "Ач/зээ", "Unknown"),
-  person("b2b", "2-р хүүхдийн хүүхэд 2", "bloodline", ["b2"], "b2bs", [], 3, "Ач/зээ", "Unknown"),
+  blood("b3", "Лувсан-Ёндон", ["c11"], "b3s", ["b3a","b3b"], 2, "3"),
+  spouseNode("b3s", "Анхилмаа", "b3", 2),
+  blood("b3a", "Төрболд", ["b3"], "", [], 3, "3.1"),
+  blood("b3b", "Хүслэн", ["b3"], "", [], 3, "3.2"),
 
-  person("b3a", "3-р хүүхдийн хүүхэд 1", "bloodline", ["b3"], "b3as", [], 3, "Ач/зээ", "Unknown"),
-  person("b3b", "3-р хүүхдийн хүүхэд 2", "bloodline", ["b3"], "b3bs", [], 3, "Ач/зээ", "Unknown"),
+  blood("b4", "Дайдийноров", ["c11"], "b4s", ["b4a","b4b","b4c"], 2, "4"),
+  spouseNode("b4s", "Наранбаяр", "b4", 2),
+  blood("b4a", "Ууган-Эрдэнэ", ["b4"], "", [], 3, "4.1"),
+  blood("b4b", "Нандин-Эрдэнэ", ["b4"], "", [], 3, "4.2"),
+  blood("b4c", "Мөнх-Эрдэнэ", ["b4"], "", [], 3, "4.3"),
 
-  person("b4a", "4-р хүүхдийн хүүхэд 1", "bloodline", ["b4"], "b4as", [], 3, "Ач/зээ", "Unknown"),
-  person("b4b", "4-р хүүхдийн хүүхэд 2", "bloodline", ["b4"], "b4bs", [], 3, "Ач/зээ", "Unknown"),
-  person("b4c", "4-р хүүхдийн хүүхэд 3", "bloodline", ["b4"], "b4cs", [], 3, "Ач/зээ", "Unknown"),
+  blood("b5", "Амаагомбо", ["c11"], "b5s", ["b5a","b5b","b5c"], 2, "5"),
+  spouseNode("b5s", "Номинчулуун", "b5", 2),
+  blood("b5a", "Ууганбаяр", ["b5"], "", [], 3, "5.1"),
+  blood("b5b", "Мишээл", ["b5"], "", [], 3, "5.2"),
+  blood("b5c", "Жамьяандорж", ["b5"], "", [], 3, "5.3"),
 
-  person("b5a", "5-р хүүхдийн хүүхэд 1", "bloodline", ["b5"], "b5as", [], 3, "Ач/зээ", "Unknown"),
-  person("b5b", "5-р хүүхдийн хүүхэд 2", "bloodline", ["b5"], "b5bs", [], 3, "Ач/зээ", "Unknown"),
-  person("b5c", "5-р хүүхдийн хүүхэд 3", "bloodline", ["b5"], "b5cs", [], 3, "Ач/зээ", "Unknown"),
+  blood("b6", "Агааноров", ["c11"], "b6s", ["b6a","b6b"], 2, "6"),
+  spouseNode("b6s", "Цэцэгдолгор", "b6", 2),
+  blood("b6a", "Энхбилгүүн", ["b6"], "", [], 3, "6.1"),
+  blood("b6b", "Энхгэрэл", ["b6"], "", [], 3, "6.2"),
 
-  person("b6a", "6-р хүүхдийн хүүхэд 1", "bloodline", ["b6"], "b6as", [], 3, "Ач/зээ", "Unknown"),
-  person("b6b", "6-р хүүхдийн хүүхэд 2", "bloodline", ["b6"], "b6bs", [], 3, "Ач/зээ", "Unknown"),
+  blood("b7", "Бумбаноров", ["c11"], "b7s", ["b7a"], 2, "7"),
+  spouseNode("b7s", "Энхзул", "b7", 2),
+  blood("b7a", "Галбадрах", ["b7"], "", [], 3, "7.1"),
 
-  person("b7a", "7-р хүүхдийн хүүхэд 1", "bloodline", ["b7"], "b7as", [], 3, "Ач/зээ", "Unknown"),
-  person("b8a", "8-р хүүхдийн хүүхэд 1", "bloodline", ["b8"], "b8as", [], 3, "Ач/зээ", "Unknown"),
-
-  person("b1a1", "1-1 салааны хүүхэд 1", "bloodline", ["b1a"], "", [], 4, "Гуч", "Unknown"),
-  person("b1a2", "1-1 салааны хүүхэд 2", "bloodline", ["b1a"], "", [], 4, "Гуч", "Unknown"),
-  person("b1b1", "1-2 салааны хүүхэд 1", "bloodline", ["b1b"], "", [], 4, "Гуч", "Unknown"),
-  person("b2a1", "2-1 салааны хүүхэд 1", "bloodline", ["b2a"], "", [], 4, "Гуч", "Unknown"),
-
-  ...["b1a","b1b","b2a","b2b","b3a","b3b","b4a","b4b","b4c","b5a","b5b","b5c","b6a","b6b","b7a","b8a"].map(id => spouse(`${id}s`, `${id.toUpperCase()} хань`, id, 3))
+  blood("b8", "Отгон", ["c11"], "b8s", ["b8a","b8b"], 2, "8"),
+  spouseNode("b8s", "Бат-Эрдэнэ", "b8", 2),
+  blood("b8a", "Маргад", ["b8"], "", [], 3, "8.1"),
+  blood("b8b", "Марал", ["b8"], "", [], 3, "8.2")
 ];
 
-function person(id, name, type, parentIds, spouseId, childrenIds, generation, relation, birthYear) {
+function blood(id, name, parentIds, spouseId, childrenIds, generation, relation) {
   return {
     id,
     name,
-    type,
-    gender: type === "spouse" ? "female" : "unknown",
+    type: "bloodline",
     parentIds,
     spouseId,
     childrenIds,
     generation,
     relation,
-    birthYear,
+    birthYear: "Мэдээлэл нэмнэ",
     birthplace: "Монгол",
-    ovog: "Лочин",
-    urgiinOvog: "Мэдээлэл нэмнэ",
-    branch: generation === 0 ? "Үндэс" : `G${generation}`,
-    bio: "Энэ хэсэгт тухайн хүний намтар, амьдралын түүх, ажил мэргэжил, гэр бүлийн дурсамжийг оруулна.",
-    events: [],
+    urgiinOvog: "Боржигон",
+    phoneNumber: "Мэдээлэл нэмнэ",
+    bio: "Энэ хэсэгт тухайн хүний намтар, дурсамж, ажил мэргэжил, амьдралын түүхийг оруулна.",
     x: 0,
     y: 0
   };
 }
 
-function spouse(id, name, partnerId, generation) {
-  return person(id, name, "spouse", [], partnerId, [], generation, "Хань", "Unknown");
+function spouseNode(id, name, spouseId, generation) {
+  return {
+    id,
+    name,
+    type: "spouse",
+    parentIds: [],
+    spouseId,
+    childrenIds: [],
+    generation,
+    relation: "Хань",
+    birthYear: "Мэдээлэл нэмнэ",
+    birthplace: "Монгол",
+    urgiinOvog: "-",
+    phoneNumber: "Мэдээлэл нэмнэ",
+    bio: "Энэ хэсэгт тухайн хүний мэдээллийг дараа нь нэмж болно.",
+    x: 0,
+    y: 0
+  };
 }
 
 /* =========================================================
@@ -106,6 +133,7 @@ const state = {
   offsetX: 0,
   offsetY: 0,
   isDragging: false,
+  dragPointerId: null,
   dragStartX: 0,
   dragStartY: 0,
   dragBaseX: 0,
@@ -125,7 +153,7 @@ function calculateLayout() {
 
   function assignX(node) {
     const children = node.childrenIds.map(id => bloodMap.get(id)).filter(Boolean);
-    if (children.length === 0) {
+    if (!children.length) {
       node.x = leafCursor * CONFIG.nodeGapX;
       leafCursor += 1;
       return node.x;
@@ -143,12 +171,11 @@ function calculateLayout() {
     p.y = (maxGeneration - p.generation) * CONFIG.levelGapY;
   });
 
-  // Founding spouse beside founder.
   familyData.filter(p => p.type === "spouse").forEach(sp => {
     const partner = getPerson(sp.spouseId);
     if (!partner) return;
     sp.x = partner.x + CONFIG.spouseGap;
-    sp.y = partner.y + 5;
+    sp.y = partner.y + 2;
   });
 
   const xs = familyData.map(p => p.x);
@@ -218,28 +245,54 @@ function renderLines() {
   svg.innerHTML = "";
 
   familyData.filter(p => p.type === "bloodline").forEach(parent => {
-    parent.childrenIds.forEach(childId => {
-      const child = getPerson(childId);
-      if (!child || child.type !== "bloodline") return;
+    const children = parent.childrenIds.map(getPerson).filter(p => p && p.type === "bloodline");
+    if (!children.length) return;
 
-      const midY = (parent.y + child.y) / 2;
-      const path = createSvg("path");
-      path.setAttribute("d", `M ${parent.x} ${parent.y - 44} C ${parent.x} ${midY}, ${child.x} ${midY}, ${child.x} ${child.y + 45}`);
-      path.setAttribute("class", "blood-line");
-      path.dataset.from = parent.id;
-      path.dataset.to = child.id;
-      svg.appendChild(path);
+    const parentTopY = parent.y - nodeRadius(parent) - 6;
+    const childBottomYs = children.map(child => child.y + nodeRadius(child) + 6);
+    const busY = (parentTopY + Math.min(...childBottomYs)) / 2;
+
+    const trunk = createSvg("line");
+    trunk.setAttribute("x1", parent.x);
+    trunk.setAttribute("y1", parentTopY);
+    trunk.setAttribute("x2", parent.x);
+    trunk.setAttribute("y2", busY);
+    trunk.setAttribute("class", "blood-line trunk-line");
+    trunk.dataset.parent = parent.id;
+    svg.appendChild(trunk);
+
+    if (children.length > 1) {
+      const bus = createSvg("line");
+      bus.setAttribute("x1", Math.min(...children.map(c => c.x)));
+      bus.setAttribute("y1", busY);
+      bus.setAttribute("x2", Math.max(...children.map(c => c.x)));
+      bus.setAttribute("y2", busY);
+      bus.setAttribute("class", "blood-line bus-line");
+      bus.dataset.parent = parent.id;
+      svg.appendChild(bus);
+    }
+
+    children.forEach(child => {
+      const childBottomY = child.y + nodeRadius(child) + 6;
+      const branch = createSvg("line");
+      branch.setAttribute("x1", child.x);
+      branch.setAttribute("y1", busY);
+      branch.setAttribute("x2", child.x);
+      branch.setAttribute("y2", childBottomY);
+      branch.setAttribute("class", "blood-line child-line");
+      branch.dataset.from = parent.id;
+      branch.dataset.to = child.id;
+      svg.appendChild(branch);
     });
   });
 
   familyData.filter(p => p.type === "bloodline" && p.spouseId).forEach(person => {
     const sp = getPerson(person.spouseId);
     if (!sp) return;
-
     const line = createSvg("line");
-    line.setAttribute("x1", person.x + 45);
+    line.setAttribute("x1", person.x + nodeRadius(person) + 6);
     line.setAttribute("y1", person.y);
-    line.setAttribute("x2", sp.x - 34);
+    line.setAttribute("x2", sp.x - nodeRadius(sp) - 6);
     line.setAttribute("y2", sp.y);
     line.setAttribute("class", "spouse-line");
     line.dataset.from = person.id;
@@ -259,11 +312,10 @@ function selectPerson(id) {
 
 function renderGeregeCard(id) {
   const person = getPerson(id);
-  const spouse = getPerson(person.spouseId);
   const path = relationshipPath(id).map(p => p.name).join(" → ");
 
   $("cardLayer").innerHTML = `
-    <article class="gerege-card" style="left:${person.x}px; top:${person.y + 78}px;">
+    <article class="gerege-card" style="left:${person.x}px; top:${person.y + 84}px;">
       <button class="card-close" type="button" onclick="closeCard()">×</button>
       <div class="card-head">
         <div class="card-avatar">${initials(person.name, person.id)}</div>
@@ -276,10 +328,8 @@ function renderGeregeCard(id) {
       <div class="info-grid">
         <p><strong>Төрсөн он:</strong> ${person.birthYear}</p>
         <p><strong>Төрсөн нутаг:</strong> ${person.birthplace}</p>
-        <p><strong>Овог:</strong> ${person.ovog}</p>
         <p><strong>Ургийн овог:</strong> ${person.urgiinOvog}</p>
-        <p><strong>Хань:</strong> ${spouse ? spouse.name : "—"}</p>
-        <p><strong>Хүүхэд:</strong> ${person.childrenIds.length}</p>
+        <p><strong>Утас:</strong> ${person.phoneNumber}</p>
       </div>
 
       <div class="path-box"><strong>Холбоос:</strong><br>${path || person.name}</div>
@@ -308,8 +358,7 @@ function searchPerson() {
   if (!query) return;
 
   const found = familyData.find(p =>
-    p.name.toLowerCase().includes(query) ||
-    p.id.toLowerCase().includes(query)
+    p.name.toLowerCase().includes(query) || p.id.toLowerCase().includes(query)
   );
 
   if (!found) {
@@ -325,7 +374,7 @@ function searchPerson() {
    9. Pan and zoom logic
    ========================================================= */
 function applyTransform() {
-  $("treeCanvas").style.transform = `translate(${state.offsetX}px, ${state.offsetY}px) scale(${state.scale})`;
+  $("treeCanvas").style.transform = `translate3d(${state.offsetX}px, ${state.offsetY}px, 0) scale(${state.scale})`;
   updateMiniMapView();
 }
 
@@ -366,22 +415,27 @@ function zoomBy(delta) {
 function startDrag(event) {
   if (event.target.closest(".person-node") || event.target.closest(".gerege-card")) return;
   state.isDragging = true;
+  state.dragPointerId = event.pointerId;
   state.dragStartX = event.clientX;
   state.dragStartY = event.clientY;
   state.dragBaseX = state.offsetX;
   state.dragBaseY = state.offsetY;
   $("treeViewport").classList.add("dragging");
+  $("treeViewport").setPointerCapture(event.pointerId);
+  event.preventDefault();
 }
 
 function dragMove(event) {
-  if (!state.isDragging) return;
+  if (!state.isDragging || event.pointerId !== state.dragPointerId) return;
   state.offsetX = state.dragBaseX + event.clientX - state.dragStartX;
   state.offsetY = state.dragBaseY + event.clientY - state.dragStartY;
   applyTransform();
 }
 
-function endDrag() {
+function endDrag(event) {
+  if (!state.isDragging || event.pointerId !== state.dragPointerId) return;
   state.isDragging = false;
+  state.dragPointerId = null;
   $("treeViewport").classList.remove("dragging");
 }
 
@@ -405,24 +459,27 @@ function highlightBloodline(id) {
   });
 
   document.querySelectorAll(".blood-line, .spouse-line").forEach(line => {
-    const active = activeIds.has(line.dataset.from) && activeIds.has(line.dataset.to);
+    let active = false;
+    if (line.dataset.from && line.dataset.to) {
+      active = activeIds.has(line.dataset.from) && activeIds.has(line.dataset.to);
+    } else if (line.dataset.parent) {
+      active = activeIds.has(line.dataset.parent);
+    }
     line.classList.toggle("line-dimmed", !active);
     line.classList.toggle("line-highlighted", active && line.classList.contains("blood-line"));
   });
 }
 
 function clearHighlight() {
-  document.querySelectorAll(".person-node").forEach(n => n.classList.remove("dimmed", "highlighted"));
-  document.querySelectorAll(".blood-line, .spouse-line").forEach(l => l.classList.remove("line-dimmed", "line-highlighted"));
+  document.querySelectorAll(".person-node").forEach(node => node.classList.remove("dimmed", "highlighted"));
+  document.querySelectorAll(".blood-line, .spouse-line").forEach(line => line.classList.remove("line-dimmed", "line-highlighted"));
 }
 
 function ancestorIds(id) {
-  const p = getPerson(id);
-  if (!p) return [];
-
-  const bloodParentId = p.parentIds.find(parentId => getPerson(parentId)?.type === "bloodline");
+  const person = getPerson(id);
+  if (!person) return [];
+  const bloodParentId = person.parentIds.find(parentId => getPerson(parentId)?.type === "bloodline");
   if (!bloodParentId) return [];
-
   return [...ancestorIds(bloodParentId), bloodParentId];
 }
 
@@ -436,7 +493,6 @@ function relationshipPath(id) {
 function renderMiniMap() {
   const mini = $("miniNodes");
   mini.innerHTML = "";
-
   familyData.filter(p => p.type === "bloodline").forEach(p => {
     const dot = document.createElement("span");
     dot.className = "mini-dot";
@@ -449,12 +505,10 @@ function renderMiniMap() {
 function updateMiniMapView() {
   const view = $("miniView");
   const viewport = $("treeViewport");
-
   const visibleW = viewport.clientWidth / (state.bounds.width * state.scale) * 210;
   const visibleH = viewport.clientHeight / (state.bounds.height * state.scale) * 140;
   const left = (-state.offsetX / (state.bounds.width * state.scale)) * 210;
   const top = (-state.offsetY / (state.bounds.height * state.scale)) * 140;
-
   view.style.width = `${clamp(visibleW, 18, 210)}px`;
   view.style.height = `${clamp(visibleH, 18, 140)}px`;
   view.style.transform = `translate(${clamp(left, 0, 210)}px, ${clamp(top, 0, 140)}px)`;
@@ -464,15 +518,11 @@ function updateMiniMapView() {
    12. Utility functions
    ========================================================= */
 function getPerson(id) {
-  return familyData.find(p => p.id === id);
-}
-
-function range(start, end) {
-  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+  return familyData.find(person => person.id === id);
 }
 
 function average(numbers) {
-  return numbers.reduce((sum, n) => sum + n, 0) / numbers.length;
+  return numbers.reduce((sum, value) => sum + value, 0) / numbers.length;
 }
 
 function clamp(value, min, max) {
@@ -483,10 +533,14 @@ function createSvg(tag) {
   return document.createElementNS("http://www.w3.org/2000/svg", tag);
 }
 
+function nodeRadius(person) {
+  return person.type === "bloodline" ? 41 : 29;
+}
+
 function initials(name, fallback) {
-  const clean = name.replace(/[0-9\-]/g, "").trim();
-  if (!clean || clean.includes("Үүсгэн")) return fallback.toUpperCase();
-  return clean.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+  const cleaned = name.replace(/[^A-Za-zА-Яа-яӨөҮүЁё\s-]/g, "").trim();
+  if (!cleaned) return fallback.toUpperCase();
+  return cleaned.split(/\s+/).map(part => part[0]).join("").slice(0, 2).toUpperCase();
 }
 
 function tryPassword() {
@@ -494,7 +548,7 @@ function tryPassword() {
   if (value === APP_PASSWORD) {
     $("passwordScreen").classList.add("hidden");
     $("app").classList.remove("hidden");
-    setTimeout(renderTree, 60);
+    setTimeout(renderTree, 40);
   } else {
     $("passwordError").classList.add("show");
   }
@@ -514,13 +568,19 @@ function bindEvents() {
   $("zoomInButton").addEventListener("click", () => zoomBy(0.12));
   $("zoomOutButton").addEventListener("click", () => zoomBy(-0.12));
   $("fitButton").addEventListener("click", fitTreeToView);
-  $("resetButton").addEventListener("click", () => centerOnPerson("f1"));
+  $("resetButton").addEventListener("click", () => centerOnPerson("c11"));
   $("printButton").addEventListener("click", () => window.print());
 
   const viewport = $("treeViewport");
   viewport.addEventListener("pointerdown", startDrag);
-  window.addEventListener("pointermove", dragMove);
-  window.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointermove", dragMove);
+  viewport.addEventListener("pointerup", endDrag);
+  viewport.addEventListener("pointercancel", endDrag);
+  viewport.addEventListener("lostpointercapture", () => {
+    state.isDragging = false;
+    state.dragPointerId = null;
+    viewport.classList.remove("dragging");
+  });
 
   viewport.addEventListener("wheel", event => {
     event.preventDefault();
