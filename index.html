@@ -7,92 +7,57 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- PASSWORD / ENTRY SCREEN -->
+  <!-- PASSWORD SCREEN -->
   <section id="passwordScreen" class="password-screen">
-    <div class="password-card">
-      <div class="soyombo-mark">☀</div>
-      <h1 data-i18n="entryTitle">Монгол Ургийн Мод</h1>
-      <p data-i18n="entrySubtitle">Гэр бүлийн түүх рүү нэвтрэх</p>
-      <input id="passwordInput" type="password" autocomplete="current-password" placeholder="Нууц үг" />
-      <button id="enterBtn" class="gold-button" data-i18n="enterButton">Нэвтрэх</button>
-      <p id="passwordError" class="password-error" data-i18n="wrongPassword">Нууц үг буруу байна.</p>
-      <small>Demo password: <strong>Лочин</strong></small>
+    <div class="entry-card">
+      <div class="entry-mark">ᠮ</div>
+      <h1>Монгол Ургийн Мод</h1>
+      <p>Гэр бүлийн түүх рүү нэвтрэх</p>
+      <input id="passwordInput" type="password" placeholder="Нууц үг" autocomplete="current-password" />
+      <button id="enterButton" class="gold-button">Нэвтрэх</button>
+      <small id="passwordError" class="error-text">Нууц үг буруу байна.</small>
     </div>
   </section>
 
-  <!-- MAIN APP -->
-  <div id="app" class="app hidden">
+  <!-- APP -->
+  <section id="app" class="app hidden">
     <header class="topbar">
-      <div>
-        <h1 data-i18n="title">Монгол Ургийн Мод</h1>
-        <p data-i18n="subtitle">Үндэснээс мөчир хүртэл ургах гэр бүлийн холбоо</p>
+      <div class="brand">
+        <h1>Монгол Ургийн Мод</h1>
+        <p>Үндэснээс мөчир хүртэл ургах гэр бүлийн холбоо</p>
       </div>
-      <div class="header-actions">
-        <button id="mnBtn" class="chip active">MN</button>
-        <button id="enBtn" class="chip">EN</button>
+
+      <div class="top-actions">
+        <label class="search">
+          <span>Хайх</span>
+          <input id="searchInput" type="search" placeholder="Нэр эсвэл код хайх..." />
+        </label>
+        <button id="searchButton" class="chip">Хайх</button>
+        <button id="zoomOutButton" class="chip">−</button>
+        <button id="zoomInButton" class="chip">+</button>
+        <button id="fitButton" class="chip">Бүтнээр харах</button>
+        <button id="resetButton" class="chip">Төвлөрүүлэх</button>
+        <button id="printButton" class="chip">Хэвлэх</button>
       </div>
     </header>
 
-    <!-- CONTROLS -->
-    <section class="controls glass-panel">
-      <div class="search-box">
-        <input id="searchInput" type="search" placeholder="Нэр хайх..." />
-        <button id="searchBtn" class="gold-button" data-i18n="search">Хайх</button>
-      </div>
-      <div class="control-group">
-        <button id="treeViewBtn" class="chip active" data-i18n="treeView">Tree View</button>
-        <button id="timelineViewBtn" class="chip" data-i18n="timelineView">Timeline View</button>
-      </div>
-      <div class="control-group">
-        <button id="zoomInBtn" class="chip">＋</button>
-        <button id="zoomOutBtn" class="chip">－</button>
-        <button id="resetViewBtn" class="chip" data-i18n="reset">Reset</button>
-      </div>
-      <div class="control-group">
-        <button id="addChildBtn" class="chip" data-i18n="addChild">+ Child</button>
-        <button id="addSpouseBtn" class="chip" data-i18n="addSpouse">+ Spouse</button>
-        <button id="addParentBtn" class="chip" data-i18n="addParent">+ Parent</button>
-      </div>
-      <div class="control-group">
-        <button id="pngBtn" class="chip" data-i18n="downloadPng">PNG</button>
-        <button id="pdfBtn" class="chip" data-i18n="downloadPdf">PDF</button>
-        <button id="printBtn" class="chip" data-i18n="print">Print</button>
-      </div>
-    </section>
+    <main class="workspace">
+      <div class="hint">Drag хийж хөдөлгөнө • Scroll/товчоор zoom хийнэ • Хүн дээр дарвал gerege мэдээлэл нээгдэнэ</div>
 
-    <!-- TREE VIEWPORT -->
-    <main id="treeSection" class="tree-section">
-      <div id="treeViewport" class="tree-viewport">
+      <section id="treeViewport" class="tree-viewport" aria-label="Family tree viewport">
         <div id="treeCanvas" class="tree-canvas">
           <svg id="lineLayer" class="line-layer" aria-hidden="true"></svg>
           <div id="nodeLayer" class="node-layer"></div>
           <div id="cardLayer" class="card-layer"></div>
         </div>
-      </div>
-      <div id="miniMap" class="mini-map">
-        <div id="miniMapNodes"></div>
-        <div id="miniMapView"></div>
-      </div>
+      </section>
+
+      <aside id="miniMap" class="mini-map" aria-label="Mini map">
+        <div id="miniNodes"></div>
+        <div id="miniView"></div>
+      </aside>
     </main>
-
-    <!-- TIMELINE VIEW -->
-    <section id="timelineSection" class="timeline-section hidden"></section>
-
-    <!-- ADMIN MOCKUP -->
-    <dialog id="adminDialog" class="admin-dialog">
-      <form method="dialog">
-        <h2 id="adminTitle">Add Person</h2>
-        <p data-i18n="adminNote">Front-end demo only. Edit script.js to save permanently.</p>
-        <label>Name <input id="adminName" type="text" /></label>
-        <label>Birth year <input id="adminBirth" type="text" /></label>
-        <label>Relation <input id="adminRelation" type="text" /></label>
-        <menu>
-          <button value="cancel" class="chip">Cancel</button>
-          <button id="adminSaveBtn" value="default" class="gold-button">Preview Add</button>
-        </menu>
-      </form>
-    </dialog>
-  </div>
+  </section>
 
   <script src="script.js"></script>
 </body>
