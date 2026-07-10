@@ -578,6 +578,116 @@ function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+
+
+// iPhone / Safari touch fallback for the tree viewport only.
+function getTouchDistance(t1, t2) {
+  return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+}
+
+function getTouchMidpoint(t1, t2) {
+  return {
+    x: (t1.clientX + t2.clientX) / 2,
+    y: (t1.clientY + t2.clientY) / 2
+  };
+}
+
+function handleTouchStart(event) {
+  const touches = event.touches;
+  const viewport = $("treeViewport");
+
+  if (touches.length === 1) {
+    const t = touches[0];
+    state.isDragging = true;
+    state.isPinching = false;
+    state.dragStartX = t.clientX;
+    state.dragStartY = t.clientY;
+    state.dragBaseX = state.offsetX;
+    state.dragBaseY = state.offsetY;
+    state.movedDuringTouch = false;
+    viewport.classList.add("dragging");
+  } else if (touches.length === 2) {
+    const [a, b] = touches;
+    const rect = viewport.getBoundingClientRect();
+    const center = getTouchMidpoint(a, b);
+
+    state.isDragging = false;
+    state.isPinching = true;
+    state.movedDuringTouch = true;
+    state.pinchStartDistance = getTouchDistance(a, b);
+    state.pinchStartScale = state.scale;
+    state.pinchWorldX = (center.x - rect.left - state.offsetX) / state.scale;
+    state.pinchWorldY = (center.y - rect.top - state.offsetY) / state.scale;
+
+    event.preventDefault();
+  }
+}
+
+function handleTouchMove(event) {
+  const touches = event.touches;
+  const viewport = $("treeViewport");
+
+  if (touches.length === 2) {
+    const [a, b] = touches;
+    const rect = viewport.getBoundingClientRect();
+    const center = getTouchMidpoint(a, b);
+    const newScale = clamp(
+      state.pinchStartScale * (getTouchDistance(a, b) / state.pinchStartDistance),
+      CONFIG.minScale,
+      CONFIG.maxScale
+    );
+
+    state.scale = newScale;
+    state.offsetX = center.x - rect.left - state.pinchWorldX * newScale;
+    state.offsetY = center.y - rect.top - state.pinchWorldY * newScale;
+    applyTransform();
+    event.preventDefault();
+    return;
+  }
+
+  if (touches.length === 1 && state.isDragging) {
+    const t = touches[0];
+    const dx = t.clientX - state.dragStartX;
+    const dy = t.clientY - state.dragStartY;
+
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      state.movedDuringTouch = true;
+    }
+
+    state.offsetX = state.dragBaseX + dx;
+    state.offsetY = state.dragBaseY + dy;
+    applyTransform();
+
+    if (state.movedDuringTouch) {
+      event.preventDefault();
+    }
+  }
+}
+
+function handleTouchEnd(event) {
+  const viewport = $("treeViewport");
+
+  if (event.touches.length === 0) {
+    state.isDragging = false;
+    state.isPinching = false;
+    viewport.classList.remove("dragging");
+
+    if (state.movedDuringTouch) {
+      setTimeout(() => {
+        state.movedDuringTouch = false;
+      }, 90);
+    }
+  } else if (event.touches.length === 1) {
+    const t = event.touches[0];
+    state.isDragging = true;
+    state.isPinching = false;
+    state.dragStartX = t.clientX;
+    state.dragStartY = t.clientY;
+    state.dragBaseX = state.offsetX;
+    state.dragBaseY = state.offsetY;
+  }
+}
+
 /* =========================================================
    10. Highlight logic
    ========================================================= */
@@ -774,6 +884,12 @@ function bindEvents() {
     event.preventDefault();
     zoomBy(event.deltaY > 0 ? -0.08 : 0.08);
   }, { passive: false });
+
+  // Safari/iPhone fallback: gestures apply only inside the tree area.
+  viewport.addEventListener("touchstart", handleTouchStart, { passive: false });
+  viewport.addEventListener("touchmove", handleTouchMove, { passive: false });
+  viewport.addEventListener("touchend", handleTouchEnd, { passive: false });
+  viewport.addEventListener("touchcancel", handleTouchEnd, { passive: false });
 
   window.addEventListener("resize", () => {
     if (!$("app").classList.contains("hidden")) fitTreeToView();
