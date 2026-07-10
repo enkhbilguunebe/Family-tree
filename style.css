@@ -1,120 +1,139 @@
+/* 1. Reset and base styles */
 :root {
-  --gold: #f5c95b;
-  --gold2: #b87718;
-  --dark: #24150a;
-  --ink: #2a1707;
-  --line: rgba(95, 58, 23, .82);
-  --glass: rgba(255, 244, 214, .18);
+  --gold: #d7a83d;
+  --gold-bright: #ffd970;
+  --deep-gold: #8f651c;
+  --brown: #4b2a14;
+  --dark: #1e160e;
+  --cream: #fff3d0;
+  --glass: rgba(44, 25, 10, 0.38);
+  --glass-light: rgba(255, 245, 215, 0.18);
+  --line: rgba(255, 211, 103, 0.9);
+  --silver: #e8e2d7;
+  --silver-border: #9d968d;
 }
 * { box-sizing: border-box; }
-html, body { height: 100%; margin: 0; }
+html, body { margin: 0; min-height: 100%; font-family: Inter, Arial, sans-serif; color: var(--cream); }
+button, input { font: inherit; }
+button { cursor: pointer; }
+.hidden { display: none !important; }
+
+/* 2. Background and layout */
 body {
-  font-family: Inter, Arial, sans-serif;
-  color: #fff3cf;
-  overflow: hidden;
-  background: url("assets/mongolian-background.png") center center / cover fixed no-repeat;
-}
-.bgShade {
-  position: fixed; inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,.22), rgba(40,20,4,.32));
-  pointer-events: none;
-}
-.topbar {
-  position: fixed; z-index: 20; left: 22px; right: 22px; top: 18px;
-  display: flex; align-items: center; justify-content: space-between; gap: 18px;
-  padding: 16px 18px;
-  border: 1px solid rgba(255, 218, 120, .35);
-  border-radius: 22px;
-  background: linear-gradient(135deg, rgba(35,18,4,.72), rgba(137,82,23,.33));
-  backdrop-filter: blur(12px);
-  box-shadow: 0 18px 45px rgba(0,0,0,.25);
-}
-.eyebrow { margin: 0 0 4px; letter-spacing: .22em; text-transform: uppercase; color: #ffd77b; font-size: 11px; }
-h1 { margin: 0; line-height: 1; font-size: clamp(28px, 4vw, 54px); text-transform: uppercase; letter-spacing: .08em; }
-.controls { display: flex; gap: 8px; }
-.controls button {
-  appearance: none; border: 1px solid rgba(255,224,142,.55); color: #2c1605;
-  background: linear-gradient(#ffe79f, #c98724); min-width: 44px; height: 40px; border-radius: 13px;
-  font-weight: 900; cursor: pointer; box-shadow: inset 0 1px rgba(255,255,255,.8), 0 8px 24px rgba(0,0,0,.2);
-}
-.controls button:hover { transform: translateY(-2px); }
-.viewport {
-  position: fixed; inset: 0; overflow: hidden; cursor: grab;
-}
-.viewport.dragging { cursor: grabbing; }
-.world {
-  position: absolute; left: 0; top: 0; width: 9800px; height: 3400px;
-  transform-origin: 0 0;
-}
-.lines { position: absolute; left: 0; top: 0; width: 9800px; height: 3400px; overflow: visible; }
-.nodes, .cards { position: absolute; inset: 0; pointer-events: none; }
-.tree-line {
-  stroke: var(--line); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round;
-  fill: none; filter: drop-shadow(0 2px 2px rgba(255,225,130,.35));
-  stroke-dasharray: 14 12;
-  animation: branchFlow 3.8s linear infinite;
-}
-.tree-line.soft { stroke-width: 4; stroke: rgba(255,210,108,.55); stroke-dasharray: none; }
-@keyframes branchFlow { to { stroke-dashoffset: -52; } }
-.person {
-  pointer-events: auto; position: absolute; border-radius: 999px;
-  display: flex; align-items: center; justify-content: center; text-align: center;
-  cursor: pointer; user-select: none; isolation: isolate;
-  transition: transform .22s ease, filter .22s ease, box-shadow .22s ease;
-}
-.person.blood {
-  width: 122px; height: 122px;
-  background: radial-gradient(circle at 30% 25%, #fff5c9 0 18%, #ffd36a 38%, #b56c16 70%, #5b2c06 100%);
-  border: 5px solid rgba(255, 230, 135, .92);
-  box-shadow: 0 0 0 9px rgba(87,43,3,.35), 0 18px 35px rgba(0,0,0,.35), inset 0 4px 15px rgba(255,255,255,.55);
-}
-.person.spouse {
-  width: 90px; height: 90px;
-  background: radial-gradient(circle at 30% 25%, #fff 0 22%, #e6e0d2 45%, #9c917a 100%);
-  border: 4px solid rgba(255, 244, 218, .9);
-  box-shadow: 0 0 0 7px rgba(90,80,60,.28), 0 14px 26px rgba(0,0,0,.28), inset 0 4px 12px rgba(255,255,255,.75);
-}
-.person:hover { transform: scale(1.13); z-index: 5; filter: saturate(1.14) brightness(1.08); }
-.person.active { transform: scale(1.18); z-index: 8; }
-.avatarText { display: grid; place-items: center; width: 100%; height: 100%; padding: 9px; color: #271306; font-weight: 900; }
-.avatarText .initials { font-size: 25px; line-height: 1; }
-.avatarText .name { position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%); min-width: 142px; color: #fff1c9; font-size: 21px; font-weight: 900; text-shadow: 0 3px 10px #000, 0 1px 0 #000; }
-.person.spouse .avatarText .initials { font-size: 19px; }
-.person.spouse .avatarText .name { font-size: 15px; min-width: 118px; }
-.generationLabel {
-  position: absolute; left: 90px; font-size: 36px; font-weight: 900; text-transform: uppercase;
-  color: rgba(255,236,170,.25); letter-spacing: .16em; text-shadow: 0 4px 20px rgba(0,0,0,.6);
-}
-.infoCard {
-  pointer-events: auto; position: absolute; width: 290px; min-height: 420px; padding: 78px 24px 28px;
-  color: #2a1605; text-align: center; z-index: 30;
+  min-height: 100vh;
   background:
-    linear-gradient(rgba(255,224,108,.82), rgba(201,126,25,.88)),
-    url("assets/gerege.png") center top / cover no-repeat;
-  border: 2px solid #ffe99a; border-radius: 140px 140px 28px 28px;
-  box-shadow: 0 28px 60px rgba(0,0,0,.46), inset 0 2px 22px rgba(255,255,255,.45);
-  transform-origin: top center;
-  animation: rollDown .42s cubic-bezier(.2,.9,.18,1.18) both;
+    linear-gradient(180deg, rgba(12, 9, 5, 0.18), rgba(12, 8, 4, 0.72)),
+    url("assets/mongolian-background.png") center/cover fixed no-repeat;
+  overflow: hidden;
 }
-.infoCard::before {
-  content: ""; position: absolute; top: -22px; left: 50%; width: 4px; height: 28px;
-  background: #f7d46a; box-shadow: 0 0 0 2px #683708; transform: translateX(-50%);
+.app { min-height: 100vh; display: grid; grid-template-rows: auto auto 1fr; gap: 12px; padding: 18px; }
+.glass-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(52,30,12,0.40));
+  border: 1px solid rgba(255, 226, 145, 0.34);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.20);
+  backdrop-filter: blur(10px);
 }
-@keyframes rollDown { from { opacity: 0; transform: translateY(-35px) scaleY(.08); } to { opacity: 1; transform: translateY(0) scaleY(1); } }
-.infoCard h2 { margin: 8px 0 10px; font-size: 28px; }
-.infoCard p { margin: 8px 0; font-size: 14px; line-height: 1.35; font-weight: 700; }
-.infoCard .tag { display: inline-block; margin-bottom: 8px; padding: 6px 12px; border-radius: 999px; background: rgba(255,250,220,.72); border: 1px solid rgba(94,45,5,.25); font-size: 12px; font-weight: 900; }
-.infoCard button { margin-top: 10px; border: 0; border-radius: 999px; background: #2b1505; color: #ffe18c; padding: 10px 18px; font-weight: 900; cursor: pointer; }
-.legend {
-  position: fixed; z-index: 20; left: 22px; bottom: 18px; display: flex; gap: 14px; flex-wrap: wrap; max-width: calc(100vw - 44px);
-  padding: 12px 14px; border-radius: 18px; background: rgba(24,12,3,.58); border: 1px solid rgba(255,218,120,.32); backdrop-filter: blur(10px);
-  color: #ffe7a8; font-size: 13px; font-weight: 800;
+
+/* 3. Header and controls */
+.topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 18px; border-radius: 22px; background: rgba(27, 18, 9, 0.36); border: 1px solid rgba(255, 217, 112, 0.24); backdrop-filter: blur(8px); }
+.topbar h1 { margin: 0; font-size: clamp(24px, 4vw, 42px); letter-spacing: 0.04em; text-shadow: 0 3px 12px rgba(0,0,0,0.55); }
+.topbar p { margin: 4px 0 0; color: rgba(255,243,208,0.82); }
+.header-actions, .control-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-radius: 22px; padding: 10px; }
+.search-box { display: flex; gap: 8px; min-width: min(100%, 340px); }
+.search-box input, .password-card input, .admin-dialog input { width: 100%; padding: 11px 13px; border-radius: 14px; border: 1px solid rgba(255,215,112,0.42); background: rgba(255,245,222,0.9); color: #2a1809; outline: none; }
+.chip, .gold-button { border: 1px solid rgba(255, 218, 112, 0.45); border-radius: 999px; padding: 10px 14px; color: var(--cream); background: rgba(46, 27, 12, 0.62); box-shadow: 0 7px 18px rgba(0,0,0,0.20); transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
+.chip:hover, .gold-button:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.30); }
+.chip.active, .gold-button { background: linear-gradient(135deg, #ffdb75, #a66b15); color: #211306; font-weight: 800; }
+
+/* 4. Tree viewport */
+.tree-section { position: relative; min-height: 0; }
+.tree-viewport { position: relative; width: 100%; height: calc(100vh - 198px); overflow: auto; border-radius: 26px; background: radial-gradient(circle at 50% 55%, rgba(255,221,132,0.10), transparent 44%), rgba(9, 6, 3, 0.18); border: 1px solid rgba(255,217,112,0.25); cursor: grab; }
+.tree-viewport:active { cursor: grabbing; }
+.tree-canvas { position: relative; width: 5600px; height: 2700px; transform-origin: 0 0; }
+.line-layer, .node-layer, .card-layer { position: absolute; inset: 0; width: 100%; height: 100%; }
+.line-layer { overflow: visible; pointer-events: none; }
+.card-layer { pointer-events: none; z-index: 20; }
+
+/* 5. Person nodes */
+.person-node { position: absolute; z-index: 10; text-align: center; transform: translate(-50%, -50%); transition: transform .24s ease, filter .24s ease, opacity .24s ease; }
+.person-node.dimmed { opacity: .22; filter: grayscale(.35); }
+.person-node.highlighted { filter: drop-shadow(0 0 16px var(--gold-bright)); }
+.person-node:hover { transform: translate(-50%, -50%) scale(1.10); z-index: 30; }
+.portrait { position: relative; display: grid; place-items: center; margin: 0 auto; border-radius: 50%; user-select: none; background: radial-gradient(circle at 32% 25%, #fff6d0, #e6b84f 42%, #8b5714 100%); border: 4px solid rgba(255,226,132,0.98); box-shadow: 0 0 0 4px rgba(71,41,13,0.88), 0 16px 30px rgba(0,0,0,0.35), inset 0 3px 8px rgba(255,255,255,0.45); color: #2a1707; font-weight: 900; letter-spacing: .04em; }
+.person-node.bloodline .portrait { width: 92px; height: 92px; font-size: 28px; }
+.person-node.spouse .portrait { width: 68px; height: 68px; font-size: 21px; background: radial-gradient(circle at 30% 20%, #ffffff, #e6dfd1 55%, #a99f92); border-color: rgba(250,250,250,0.95); }
+.name-label { display: inline-block; margin-top: 9px; max-width: 150px; padding: 6px 10px; border-radius: 999px; color: #fff3d0; background: rgba(34, 20, 8, 0.70); border: 1px solid rgba(255,219,117,0.38); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; backdrop-filter: blur(4px); }
+.generation-badge { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 10px; padding: 3px 8px; border-radius: 999px; background: rgba(255, 217, 112, .86); color: #241306; font-weight: 800; }
+
+/* 6. Bloodline and spouse styles */
+.branch-founder .portrait { box-shadow: 0 0 0 4px rgba(71,41,13,0.88), 0 0 40px rgba(255,216,103,0.45), inset 0 3px 8px rgba(255,255,255,0.45); }
+.branch-blue .portrait { border-color: #a9d6ff; }
+.branch-red .portrait { border-color: #ffb7a9; }
+.branch-green .portrait { border-color: #bff0b1; }
+
+/* 7. Connection lines */
+.blood-line { stroke: var(--line); stroke-width: 5; fill: none; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(255, 219, 91, .48)); stroke-dasharray: 900; animation: drawLine 1.25s ease both; }
+.spouse-line { stroke: rgba(232,226,215,0.95); stroke-width: 3; fill: none; stroke-linecap: round; stroke-dasharray: 12 10; }
+.line-dimmed { opacity: .18; }
+.line-highlighted { stroke: var(--gold-bright); stroke-width: 7; opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 226, 112, .85)); }
+@keyframes drawLine { from { stroke-dashoffset: 900; } to { stroke-dashoffset: 0; } }
+
+/* 8. Gerege profile card */
+.gerege-card { position: absolute; width: 310px; min-height: 390px; padding: 28px 22px 20px; pointer-events: auto; transform-origin: top center; animation: rollDown .34s ease both; color: #251204; border-radius: 34px; background: linear-gradient(145deg, rgba(255,229,112,0.98), rgba(177,112,18,0.98)); border: 2px solid rgba(255,243,176,0.95); box-shadow: 0 24px 45px rgba(0,0,0,.42), inset 0 0 18px rgba(255,255,255,.30); }
+.gerege-card::before { content: ""; position: absolute; inset: 10px; border-radius: 28px; border: 1px solid rgba(80,45,8,.45); background: url("assets/gerege.png") top center/82px auto no-repeat; opacity: .20; pointer-events: none; }
+.gerege-card h2 { position: relative; margin: 58px 0 5px; font-size: 22px; }
+.gerege-card p, .gerege-card li { position: relative; margin: 7px 0; line-height: 1.38; font-size: 13px; }
+.gerege-card .card-portrait { position: absolute; top: -42px; left: 50%; transform: translateX(-50%); width: 82px; height: 82px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 24px; background: radial-gradient(circle at 30% 20%, #fff9d9, #d49b28); border: 4px solid #fff1a7; box-shadow: 0 8px 20px rgba(0,0,0,.32); }
+.card-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(52,29,8,.22); color: #251204; font-weight: 900; }
+.relationship-path { position: relative; padding: 9px; border-radius: 12px; background: rgba(255,255,255,.24); font-weight: 800; }
+.gallery { position: relative; display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 10px; }
+.gallery span { min-height: 34px; border-radius: 8px; display: grid; place-items: center; background: rgba(255,255,255,.26); font-size: 10px; }
+@keyframes rollDown { from { opacity: 0; transform: translate(-50%, -18px) rotateX(-80deg) scale(.94); } to { opacity: 1; transform: translate(-50%, 0) rotateX(0) scale(1); } }
+
+/* 9. Search and admin UI */
+.admin-dialog { border: 1px solid rgba(255,219,117,.6); border-radius: 24px; background: #fff3d0; color: #2a1707; padding: 20px; box-shadow: 0 25px 80px rgba(0,0,0,.5); }
+.admin-dialog form { display: grid; gap: 12px; width: min(420px, 82vw); }
+.admin-dialog label { display: grid; gap: 5px; font-weight: 700; }
+.admin-dialog menu { display: flex; justify-content: flex-end; gap: 8px; padding: 0; margin: 8px 0 0; }
+
+/* 10. Timeline mode */
+.timeline-section { height: calc(100vh - 198px); overflow: auto; border-radius: 26px; padding: 24px; background: rgba(10, 6, 3, .30); border: 1px solid rgba(255,217,112,0.25); backdrop-filter: blur(8px); }
+.timeline-group { margin: 0 0 22px; padding: 18px; border-left: 4px solid var(--gold); background: rgba(255,244,214,.12); border-radius: 0 20px 20px 0; }
+.timeline-group h2 { margin: 0 0 12px; }
+.timeline-people { display: flex; gap: 10px; flex-wrap: wrap; }
+.timeline-person { padding: 9px 12px; border-radius: 999px; background: rgba(255,217,112,.18); border: 1px solid rgba(255,217,112,.38); }
+
+/* 11. Mini map */
+.mini-map { position: absolute; right: 20px; bottom: 20px; width: 190px; height: 120px; border-radius: 16px; background: rgba(22, 13, 6, .58); border: 1px solid rgba(255,217,112,.42); overflow: hidden; backdrop-filter: blur(6px); }
+.mini-dot { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: var(--gold-bright); }
+#miniMapView { position: absolute; border: 1px solid rgba(255,255,255,.8); background: rgba(255,255,255,.08); }
+
+/* 12. Print styles */
+@media print {
+  body { background: white; overflow: visible; }
+  .password-screen, .topbar, .controls, .mini-map, .gerege-card { display: none !important; }
+  .app { display: block; padding: 0; }
+  .tree-viewport { height: auto; overflow: visible; border: none; background: white; }
+  .tree-canvas { transform: scale(.2) !important; transform-origin: top left; }
 }
-.dot { display: inline-block; width: 13px; height: 13px; border-radius: 999px; margin-right: 6px; vertical-align: -2px; }
-.dot.blood { background: #f4bd3f; }
-.dot.spouse { background: #ddd8ca; }
-@media (max-width: 720px) {
-  .topbar { left: 10px; right: 10px; top: 10px; padding: 12px; }
-  .legend { left: 10px; bottom: 10px; font-size: 11px; }
-  .controls button { min-width: 38px; height: 36px; }
+
+/* 13. Responsive styles */
+@media (max-width: 760px) {
+  body { overflow: auto; }
+  .app { padding: 10px; }
+  .topbar { align-items: flex-start; flex-direction: column; }
+  .tree-viewport, .timeline-section { height: 68vh; }
+  .controls { max-height: 28vh; overflow: auto; }
+  .mini-map { display: none; }
 }
+
+/* Password screen */
+.password-screen { position: fixed; inset: 0; display: grid; place-items: center; background: linear-gradient(rgba(8,5,2,.35), rgba(8,5,2,.72)), url("assets/mongolian-background.png") center/cover no-repeat; z-index: 100; }
+.password-card { width: min(430px, 90vw); padding: 34px; text-align: center; border-radius: 28px; background: rgba(38, 22, 9, 0.55); border: 1px solid rgba(255,217,112,.45); box-shadow: 0 22px 70px rgba(0,0,0,.45); backdrop-filter: blur(12px); }
+.password-card h1 { margin: 8px 0 6px; }
+.password-card p { opacity: .88; }
+.password-card input { margin: 14px 0 10px; }
+.password-error { display: none; color: #ffd1c9; font-weight: 800; }
+.password-error.show { display: block; }
+.soyombo-mark { width: 76px; height: 76px; margin: 0 auto; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, #ffdf70, #98620f); color: #2b1706; font-size: 34px; box-shadow: 0 0 34px rgba(255,215,112,.4); }

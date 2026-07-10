@@ -1,26 +1,65 @@
-Mongolian Logic Family Tree Website
+Mongolian Family Tree Website
+=============================
 
-Files:
-- index.html
-- style.css
-- script.js
-- assets/mongolian-background.png
-- assets/gerege.png
+How to open:
+1. Open index.html in a browser.
+2. Enter the password: Лочин
 
-How to use on GitHub Pages:
-1. Extract the ZIP.
-2. Upload index.html, style.css, script.js, and the assets folder to your GitHub repository.
+How to upload to GitHub Pages:
+1. Create a new GitHub repository.
+2. Upload these extracted files, not the ZIP itself:
+   - index.html
+   - style.css
+   - script.js
+   - assets/
+   - README.txt
 3. Go to Settings > Pages.
-4. Select Deploy from a branch, main branch, /root folder.
-5. Save and wait for the GitHub Pages link.
+4. Source: Deploy from branch.
+5. Branch: main, folder: /root.
 
-How the logic works:
-- The tree starts from 2 founders at the bottom/root.
-- Descendants grow upward by generation.
-- Big gold circles are bloodline people.
-- Smaller silver circles are spouses.
-- Only bloodline descendants continue the main branch.
-- Each child group is centered above its parents, not randomly placed.
+How to edit the password:
+Open script.js and change:
+const APP_PASSWORD = "Лочин";
 
-Edit people:
-Open script.js and edit the generated names or replace the buildFamily() function with your real family data.
+How to edit family members:
+Open script.js.
+Look at section:
+/* 1. Family data */
+
+The current demo creates 100 people automatically:
+- 50 bloodline people
+- 50 spouse people
+
+Each person has fields like:
+id, name, gender, type, parentIds, spouseId, childrenIds, generation, birthYear, birthplace, ovog, branch, bio, photos, events.
+
+How to change the background:
+Replace this file:
+assets/mongolian-background.png
+
+How to change the golden gerege card decoration:
+Replace this file:
+assets/gerege.png
+
+Features included:
+- Password entry screen
+- Password: Лочин
+- Mongolian background visible behind tree
+- Big gold circles for bloodline people
+- Smaller silver circles for spouses
+- Tree grows upward from founder roots
+- Hover zoom/glow animation
+- Click person to open rolling golden gerege profile card
+- Relationship path
+- Bloodline highlight
+- Search person
+- Tree View / Timeline View
+- Zoom in / zoom out / reset
+- Mini map
+- Front-end Add Child/Add Spouse/Add Parent demo
+- Print / PDF via browser print
+
+Code organization:
+index.html keeps only page structure.
+style.css contains all visual styling with sections.
+script.js contains all data, rendering, interaction, search, timeline, minimap, and utility logic with clear comments.
