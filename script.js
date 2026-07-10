@@ -94,10 +94,10 @@ function blood(id, name, parentIds, spouseId, childrenIds, generation, relation)
     childrenIds,
     generation,
     relation,
-    birthYear: "Мэдээлэл нэмнэ",
+    birthYear: "Мэдээлэл оруулна",
     birthplace: "Монгол",
     urgiinOvog: "Боржигон",
-    phoneNumber: "Мэдээлэл нэмнэ",
+    phoneNumber: "Мэдээлэл оруулна",
     bio: "Энэ хэсэгт тухайн хүний намтар, дурсамж, ажил мэргэжил, амьдралын түүхийг оруулна.",
     x: 0,
     y: 0
@@ -114,10 +114,10 @@ function spouseNode(id, name, spouseId, generation) {
     childrenIds: [],
     generation,
     relation: "Хань",
-    birthYear: "Мэдээлэл нэмнэ",
+    birthYear: "Мэдээлэл оруулна",
     birthplace: "Монгол",
     urgiinOvog: "-",
-    phoneNumber: "Мэдээлэл нэмнэ",
+    phoneNumber: "Мэдээлэл оруулна",
     bio: "Энэ хэсэгт тухайн хүний мэдээллийг дараа нь нэмж болно.",
     x: 0,
     y: 0
@@ -329,7 +329,7 @@ function renderGeregeCard(id) {
         <p><strong>Төрсөн он:</strong> ${person.birthYear}</p>
         <p><strong>Төрсөн нутаг:</strong> ${person.birthplace}</p>
         <p><strong>Ургийн овог:</strong> ${person.urgiinOvog}</p>
-        <p><strong>Утас:</strong> ${person.phoneNumber}</p>
+        <p><strong>Утасны дугаар:</strong> ${person.phoneNumber}</p>
       </div>
 
       <div class="path-box"><strong>Холбоос:</strong><br>${path || person.name}</div>
@@ -362,7 +362,7 @@ function searchPerson() {
   );
 
   if (!found) {
-    alert("Хүн олдсонгүй.");
+    alert("Ийм нэртэй хүн олдсонгүй.");
     return;
   }
 

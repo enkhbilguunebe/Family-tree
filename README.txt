@@ -1,36 +1,29 @@
-Mongolian Clean Family Tree Website
+Монгол Ургийн Бичиг
 
-Password:
+Нэвтрэх үг:
 Лочин
 
-How to open:
-1. Open index.html in a browser.
-2. Enter the password.
-3. Drag the tree to move around.
-4. Use + / - to zoom.
-5. Click a person to open the golden gerege card.
+Ашиглах заавар:
+1. index.html файлыг browser дээр нээнэ.
+2. Нэвтрэх үг оруулна.
+3. Ургийн модыг хуруу эсвэл mouse-аар чирж хөдөлгөнө.
+4. + / - товчоор томруулж, жижигрүүлнэ.
+5. Хүний нэр дээр дарвал алтан мэдээллийн самбар нээгдэнэ.
 
-How to upload to GitHub Pages:
-1. Extract this ZIP.
-2. Upload index.html, style.css, script.js, README.txt, and the assets folder to your repository.
-3. Go to Settings > Pages.
-4. Choose Deploy from branch, main, /root.
-5. Save.
+GitHub Pages дээр оруулах:
+1. ZIP файлыг задлана.
+2. index.html, style.css, script.js, README.txt болон assets хавтсыг repository руу upload хийнэ.
+3. Settings > Pages хэсэг рүү орно.
+4. Deploy from branch > main > /root сонгоно.
+5. Save дарна.
 
-How to edit people:
-Open script.js and edit the familyData section.
-The current known logic uses 41 bloodline people:
-- 2 founders
-- 11 children
-- one continuing branch with 8 children
-- deeper branches based on the structure you described
+Мэдээлэл засах:
+script.js файлын familyData хэсгээс нэр, утасны дугаар, төрсөн нутаг, намтар зэргийг засна.
 
-Important files:
-index.html = page structure only
-style.css = design and animations
-script.js = family data, layout logic, drag/zoom, click card, search
-assets/mongolian-background.png = local Mongolian background image
+Ургийн овог:
+Цусан холбооны бүх гишүүнд “Боржигон” гэж тохируулсан.
 
-To change password:
-Open script.js and edit:
+Нэвтрэх үг солих:
+script.js доторх:
 const APP_PASSWORD = "Лочин";
+гэсэн мөрийг өөрчилнө.

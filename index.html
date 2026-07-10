@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ургийн Мод</title>
+  <title>Монгол Ургийн Бичиг</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -11,11 +11,11 @@
   <section id="passwordScreen" class="password-screen">
     <div class="entry-card">
       <div class="entry-mark">ᠮ</div>
-      <h1>Ургийн Мод</h1>
+      <h1>Монгол Ургийн Бичиг</h1>
       <p>Гэр бүлийн түүх рүү нэвтрэх</p>
-      <input id="passwordInput" type="password" placeholder="Нууц үг" autocomplete="current-password" />
-      <button id="enterButton" class="gold-button">Нэвтрэх</button>
-      <small id="passwordError" class="error-text">Нууц үг буруу байна.</small>
+      <input id="passwordInput" type="password" placeholder="Орох үг" autocomplete="current-password" />
+      <button id="enterButton" class="gold-button">Орох</button>
+      <small id="passwordError" class="error-text">Орох үг буруу байна.</small>
     </div>
   </section>
 
@@ -23,26 +23,26 @@
   <section id="app" class="app hidden">
     <header class="topbar">
       <div class="brand">
-        <h1>Монгол Ургийн Мод</h1>
+        <h1>Монгол Ургийн Бичиг</h1>
         <p>Үндэснээс мөчир хүртэл ургах гэр бүлийн холбоо</p>
       </div>
 
       <div class="top-actions">
         <label class="search">
-          <span>Хайх</span>
-          <input id="searchInput" type="search" placeholder="Нэр эсвэл код хайх..." />
+          <span>Хүн хайх</span>
+          <input id="searchInput" type="search" placeholder="Нэрээр хайх..." />
         </label>
-        <button id="searchButton" class="chip">Хайх</button>
+        <button id="searchButton" class="chip">Олох</button>
         <button id="zoomOutButton" class="chip">−</button>
         <button id="zoomInButton" class="chip">+</button>
-        <button id="fitButton" class="chip">Бүтнээр харах</button>
-        <button id="resetButton" class="chip">Голлоx</button>
+        <button id="fitButton" class="chip">Бүгдийг харах</button>
+        <button id="resetButton" class="chip">Голлуулах</button>
         <button id="printButton" class="chip">Хэвлэх</button>
       </div>
     </header>
 
     <main class="workspace">
-      <div class="hint">Drag хийж хөдөлгөнө • Scroll/товчоор zoom хийнэ • Хүн дээр дарвал гэрэгэ мэдээлэл нээгдэнэ</div>
+      <div class="hint">Хуруугаар чирж хөдөлгөнө • Томруулж/жижигрүүлж харна • Хүн дээр дарвал алтан мэдээллийн самбар нээгдэнэ</div>
 
       <section id="treeViewport" class="tree-viewport" aria-label="Family tree viewport">
         <div id="treeCanvas" class="tree-canvas">
